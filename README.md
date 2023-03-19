@@ -1,5 +1,9 @@
 # gpt-chessbot
 
+A GPT powered chess bot and command-line tool.
+
+Inspired by [Tmate6/Lichess_ChatGPT_ChatBot](https://github.com/Tmate6/Lichess_ChatGPT_ChatBot) which I used for my initial implementation.
+
 ### Setup & Installation
 
 Requires Python 3, probably 3.8+
