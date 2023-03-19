@@ -22,6 +22,25 @@ cp .env.example .env
 
 ### Running GPT-Chessbot
 
+This project includes a command-line chess game. Play heads-up against GPT-4 or watch GPT-4 play itself.
+```
+ ~~~ You vs GPT ~~~
+╔═════════════════╗
+║ r n b q k b n r ║
+║ p p p p p p p p ║
+║ . . . . . . . . ║
+║ . . . . . . . . ║
+║ . . . . P . . . ║
+║ . . . . . . . . ║
+║ P P P P . P P P ║
+║ R N B Q K B N R ║
+╚═════════════════╝
+
+GPT is thinking...
+
+1. e4
+```
+
 Watch GPT play itself
 ```
 python -m gpt-chessbot play --model=gpt-4
