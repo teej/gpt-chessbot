@@ -1,0 +1,4 @@
+click
+openai
+python-chess
+python-dotenv
