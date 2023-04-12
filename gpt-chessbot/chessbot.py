@@ -3,6 +3,7 @@ import os
 import random
 import re
 import time
+import json
 
 import chess
 import chess.pgn
@@ -15,6 +16,14 @@ logging.getLogger().setLevel(level=os.getenv("LOGLEVEL", "ERROR").upper())
 
 def sanitize_chess_move(gpt_response: str, board: chess.Board) -> chess.Move:
     logging.debug(f"GPT response [{gpt_response}]")
+
+    # resp = resp.replace('"', "")
+    try:
+        js = json.parse(resp)
+        response = js["move"]
+        print("valid json found", response)
+    except:
+        pass
 
     """
     GPT will sometimes prepend the move number before the move itself (eg "26. Qb3"). This is occasionally malformed
@@ -78,18 +87,18 @@ def ask_gpt(gpt_config, board):
 
     conversation = GPTConversation(config=gpt_config)
     conversation.add_message(f"Next chess move as {color}")
-    conversation.add_message("Provide the move only in SAN notation")
+    # conversation.add_message("Provide the move only in SAN notation")
     """
     I haven't rigorously tested this but it seems to help. This is fairly expensive at 107 tokens, so it's worth
         further research.
     """
-    conversation.add_message(
-        (
-            "Examples of SAN notation are: [Nh6, Nf6, Kd7, Qd7, Qc7, Qb6, Qa5+,"
-            " Bd7, Be6, Bf5, Bg4, Bh3, Nd7, Nc6, Na6, h6, g6, f6, e6, b6, a6, "
-            "d5, h5, g5, f5, e5, b5, a5, O-O]"
-        )
-    )
+    # conversation.add_message(
+    #     (
+    #         "Examples of SAN notation are: [Nh6, Nf6, Kd7, Qd7, Qc7, Qb6, Qa5+,"
+    #         " Bd7, Be6, Bf5, Bg4, Bh3, Nd7, Nc6, Na6, h6, g6, f6, e6, b6, a6, "
+    #         "d5, h5, g5, f5, e5, b5, a5, O-O]"
+    #     )
+    # )
 
     san_move_list = extract_SAN_move_list(board)
     """
@@ -101,6 +110,7 @@ def ask_gpt(gpt_config, board):
         san_move_list += f"{move_number}. "
 
     conversation.add_message(f"Game: {san_move_list}")
+    conversation.add_message("Respond only with the move in a JSON string")
 
     attempts = 5
     while attempts:
@@ -148,8 +158,10 @@ def ask_gpt(gpt_config, board):
 
         except chess.InvalidMoveError:
             logging.debug("Invalid Move")
-            conversation.add_message("That move is invalid, try again in UCI notation")
+            # conversation.add_message("That move is invalid, try again in UCI notation")
+            conversation.add_message("That move isnt legal, try again")
 
         except chess.AmbiguousMoveError:
             logging.debug("Ambiguous Move")
-            conversation.add_message("That move is ambiguous, try again in UCI notation")
+            # conversation.add_message("That move is ambiguous, try again in UCI notation")
+            conversation.add_message("That move isnt legal, try again")
